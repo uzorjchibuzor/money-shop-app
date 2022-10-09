@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Myapp</title>
+    <title>Point of Sale Shop</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -10,7 +10,22 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
+  <body class="container-sm">
     <%= yield %>
   </body>
+
+  <script>
+    let charges_input = document.querySelector("#transaction_charges")
+    let transaction_button = document.querySelector("#transaction_button")
+
+    if (charges_input && transaction_button) {
+      charges_input.addEventListener("change", () => {
+        if (charges_input.value >= 100) {
+        transaction_button.classList.remove("disabled")  
+        } else {
+          transaction_button.classList.add("disabled")  
+        }
+      })
+    }
+  </script>
 </html>

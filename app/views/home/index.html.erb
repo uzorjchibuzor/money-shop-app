@@ -1,0 +1,115 @@
+<div class="welcome_message">
+  Welcome <%= @current_user.username.titlecase %>
+</div>   
+<%= button_to 'Log Out', sign_out_path, method: :delete %>
+
+<div class="">
+  <p>
+    New Transaction
+  </p>
+
+  <%= form_for :transaction, :url => transactions_path, html: {class: "form-inline", role:"form"} do |f| %>
+    <div class="form-group">
+      <%= f.label :transaction_type, 'Transaction Type' %>
+      <%= f.select :transaction_type, options_for_select(@transaction_types), class:"form-control" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :description, '(hint: Account Number)' %>
+      <%= f.text_field :description, class:"form-control" %>
+    </div>
+    <br />
+ 
+
+    <div class="form-group">
+      <%= f.label :amount %>
+      <%= f.text_field :amount, class:"form-control", placeholder: '0' %>
+    </div>
+    <br />
+
+    <div class="form-group">
+      <%= f.label :charges %>
+      <%= f.text_field :charges, class:"form-control", placeholder: '0' %>
+    </div>
+    <br />
+
+    <%= f.submit "Save Transaction", class: "btn btn-primary disabled", id: "transaction_button" %>
+  <% end %>
+</div>
+
+<br />
+
+<% if current_user.admin?%>
+  <div class="row mb-3 text-center">
+    <div class="col-4">
+      <p>Filter By Staff Name</p>
+      <%= form_for :filter, :url => filter_transaction_path, method: :get do |f| %>
+        <%= f.select :staff_name, options_for_select(@staff_names) %>
+        <%= f.submit "Filter", class: "btn btn-success btn-sm" %>
+      <% end %>
+    </div>
+
+    <div class="col-6">
+      <p>Filter By Date</p>
+      <%= form_for :filter, :url => filter_transaction_path, method: :get do |f| %>
+        <%= f.label :start_date%>
+        <%= f.date_field :start_date %>
+        <%= f.label :end_date%>
+        <%= f.date_field :end_date %>
+        <%= f.submit "Filter" , class: "btn btn-success btn-sm" %>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<% if @criteria %>
+  <p>Filtered by: <%= @criteria %></p>
+<% end %>
+
+<div class="">
+  <table class="table table-bordered">
+    <thead>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Amount</th>
+      <th>Charges</th>
+      <th>Date</th>
+      <th>Staff Name</th>
+    </thead>
+    <tbody>
+      <% @transactions.each do |transaction| %>
+        <tr>
+          <td>
+            <%= transaction.transaction_type.split('_').join(' ').titlecase %>
+          </td>
+          <td>
+            <%= transaction.description %>
+          </td>
+          <td>
+            <%= transaction.amount %>
+          </td>
+          <td>
+            <%= transaction.charges %>
+          </td>
+          <td>
+            <%= transaction.date %>
+          </td>
+          <td>
+            <%= transaction.user.username %>
+          </td>
+        </tr>
+      <% end %>
+      <tr>
+        <td colspan="2">Totals</td>
+        <td>
+          <%= @transactions.pluck(:amount).sum %>
+        </td>
+        <td>
+          <%= @transactions.pluck(:charges).sum %>
+        </td>
+        <td></td>
+        
+      </tr>
+    </tbody>
+  </table>
+</div>
